@@ -8,51 +8,43 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls;
 
-Type arrayString = array [0..5] of string;
+Type TQuestion = record
+       Multtype: boolean;
+       questImage: Ansistring;
+       masOfQuestion: array [-1..4] of ansistring;  //all question = question[-1] + 5 variants [0..4]
+       masofAns: array [0..4] of ansistring;       //correct answers positions
+     end;
+     TarrQ = array [0..100] of TQuestion;
 
-type
+
 
   { TForm1 }
 
   TForm1 = class(TForm)
-    ButtonRes: TButton;
+    ButtonLoad: TButton;
     ButtonStart: TButton;
-    CheckBox1_g1: TCheckBox;
-    CheckBox1_g2: TCheckBox;
-    CheckBox2_g2: TCheckBox;
-    CheckBox3_g2: TCheckBox;
-    CheckBox4_g2: TCheckBox;
-    CheckBox5_g1: TCheckBox;
-    CheckBox2_g1: TCheckBox;
-    CheckBox3_g1: TCheckBox;
-    CheckBox4_g1: TCheckBox;
-    CheckBox5_g2: TCheckBox;
     CheckGroup1: TCheckGroup;
-    CheckGroup2: TCheckGroup;
     EditRes: TEdit;
     LabelName: TLabel;
-    RadioButton1_g1: TRadioButton;
-    RadioButton5_g2: TRadioButton;
-    RadioButton1_g3: TRadioButton;
-    RadioButton2_g3: TRadioButton;
-    RadioButton3_g3: TRadioButton;
-    RadioButton4_g3: TRadioButton;
-    RadioButton5_g3: TRadioButton;
-    RadioButton2_g1: TRadioButton;
-    RadioButton3_g1: TRadioButton;
-    RadioButton4_g1: TRadioButton;
-    RadioButton5_g1: TRadioButton;
-    RadioButton1_g2: TRadioButton;
-    RadioButton2_g2: TRadioButton;
-    RadioButton3_g2: TRadioButton;
-    RadioButton4_g2: TRadioButton;
+    OpenDialog1: TOpenDialog;
     Image1: TImage;
     RadioGroup1: TRadioGroup;
-    RadioGroup2: TRadioGroup;
-    RadioGroup3: TRadioGroup;
-    procedure ButtonResClick(Sender: TObject);
+    procedure ButtonLoadClick(Sender: TObject);
     procedure ButtonStartClick(Sender: TObject);
-    procedure randomArr(var aArr: arrayString);
+    procedure SwapStr(var aArr: string; var aBrr: string);
+    procedure SwapTQuest(var aArr: TQuestion; var aBrr: TQuestion);
+    procedure randomQuestionArr(var aArr: array of string);
+    procedure randomQuestions(var aArr: array of TQuestion);
+    procedure GeneratingAns(num: word);
+    function Ans_Check(Question: TQuestion): byte;
+    procedure LoadData();
+    procedure InitFormItems();
+    procedure FinishForm();
+
+
+
+
+
 
 
 
@@ -68,9 +60,14 @@ type
 var
   Form1: TForm1;
   res: real = 0;
-  masOfQuastion1, masOfQuastion2, masOfQuastion3, masOfQuastion4, masOfQuastion5: arrayString;
-  flag1, flag2, flag3: word;
-  flag4, flag5: string;
+  maxres: real;
+  numQuest: word;
+  fin: text;
+  curnum: word = 0;
+  startflag: boolean = false;
+
+  arr: TarrQ;
+
 
 implementation
 
@@ -81,229 +78,238 @@ implementation
 
 
 
-procedure TForm1.ButtonResClick(Sender: TObject);
-var tempRes: real;
+
+
+
+procedure TForm1.ButtonLoadClick(Sender: TObject);
 begin
-  res := 0;
-
-  If (RadioButton1_g1.Checked = True) and (flag1 = 1) then
-     res := res + 1
-  else if (RadioButton2_g1.Checked = True) and (flag1 = 2) then
-     res := res + 1
-  else if (RadioButton3_g1.Checked = True) and (flag1 = 3) then
-     res := res + 1
-  else if (RadioButton4_g1.Checked = True) and (flag1 = 4) then
-     res := res + 1
-  else if (RadioButton5_g1.Checked = True) and (flag1 = 5) then
-     res := res + 1;
-
-
-  If (RadioButton1_g2.Checked = True) and (flag2 = 1) then
-     res := res + 1
-  else if (RadioButton2_g2.Checked = True) and (flag2 = 2) then
-     res := res + 1
-  else if (RadioButton3_g2.Checked = True) and (flag2 = 3) then
-     res := res + 1
-  else if (RadioButton4_g2.Checked = True) and (flag2 = 4) then
-     res := res + 1
-  else if (RadioButton5_g2.Checked = True) and (flag2 = 5) then
-     res := res + 1;
-
-
-
-  If (RadioButton1_g3.Checked = True) and (flag3 = 1) then
-     res := res + 1
-  else if (RadioButton2_g3.Checked = True) and (flag3 = 2) then
-     res := res + 1
-  else if (RadioButton3_g3.Checked = True) and (flag3 = 3) then
-     res := res + 1
-  else if (RadioButton4_g3.Checked = True) and (flag3 = 4) then
-     res := res + 1
-  else if (RadioButton5_g3.Checked = True) and (flag3 = 5) then
-     res := res + 1;
-
-
-  if ((CheckBox1_g1.Checked = True) and (pos(1, flag4) <> 0)) or ((CheckBox1_g1.Checked = false) and (pos(1, flag4) = 0)) then
-     if ((CheckBox2_g1.Checked = True) and (pos(2, flag4) <> 0)) or ((CheckBox2_g1.Checked = false) and (pos(2, flag4) = 0)) then
-        if ((CheckBox3_g1.Checked = True) and (pos(3, flag4) <> 0)) or ((CheckBox3_g1.Checked = false) and (pos(3, flag4) = 0)) then
-           if ((CheckBox4_g1.Checked = True) and (pos(4, flag4) <> 0)) or ((CheckBox4_g1.Checked = false) and (pos(4, flag4) = 0)) then
-              if ((CheckBox5_g1.Checked = True) and (pos(5, flag4) <> 0)) or ((CheckBox5_g1.Checked = false) and (pos(5, flag4) = 0)) then
-                 res := res + 3;
-
-
-
-
-  if ((CheckBox1_g2.Checked = True) and (pos(1, flag5) <> 0)) or ((CheckBox1_g2.Checked = false) and (pos(1, flag5) = 0)) then
-     if ((CheckBox2_g2.Checked = True) and (pos(2, flag5) <> 0)) or ((CheckBox2_g2.Checked = false) and (pos(2, flag5) = 0)) then
-        if ((CheckBox3_g2.Checked = True) and (pos(3, flag5) <> 0)) or ((CheckBox3_g2.Checked = false) and (pos(3, flag5) = 0)) then
-           if ((CheckBox4_g2.Checked = True) and (pos(4, flag5) <> 0)) or ((CheckBox4_g2.Checked = false) and (pos(4, flag5) = 0)) then
-              if ((CheckBox5_g2.Checked = True) and (pos(5, flag5) <> 0)) or ((CheckBox5_g2.Checked = false) and (pos(5, flag5) = 0)) then
-                 res := res + 4;
-
-
-  tempRes := res / 10 * 100;
-  EditRes.Text := 'Your score: ' + FloatToStr(tempRes) + '%';
+   OpenDialog1.Execute;
+   ButtonStart.Visible := True;
 end;
 
-procedure TForm1.randomArr(var aArr: arrayString);
-var ran1, ran2, ran3, ran4, ran5, i: word;
-    temparr: arrayString;
+
+
+
+
+procedure TForm1.SwapStr(var aArr: string; var aBrr: string);
+var temp: string;
 begin
-  ran1 := random(5) + 1;
-  temparr[1] := aArr[ran1];
+  temp := aArr;
+  aArr := aBrr;
+  aBrr := temp;
+end;
 
-  repeat
-     ran2 := random(5) + 1;
-  until ran2 <> ran1;
-  temparr[2] := aArr[ran2];
 
-  repeat
-     ran3 := random(5) + 1;
-  until (ran3 <> ran2) and (ran3 <> ran1);
-  temparr[3] := aArr[ran3];
 
-  repeat
-     ran4 := random(5) + 1;
-  until (ran4 <> ran3) and (ran4 <> ran2) and (ran4 <> ran1);
-  temparr[4] := aArr[ran4];
 
-  ran5 := 15 - ran1 - ran2 - ran3 - ran4;
-  temparr[5] := aArr[ran5];
+procedure TForm1.SwapTQuest(var aArr: TQuestion; var aBrr: TQuestion);
+var temp: TQuestion;
+begin
+  temp := aArr;
+  aArr := aBrr;
+  aBrr := temp;
+end;
 
-  for i := 1 to 5 do begin
-    aArr[i] := temparr[i];
+
+
+
+procedure TForm1.randomQuestionArr(var aArr: array of string);
+var i, temp: word;
+begin
+  for i := 0 to numQuest do begin
+     temp := random(numQuest);
+     swapStr(aArr[i], aArr[temp]);
   end;
 
+end;
 
+
+procedure TForm1.randomQuestions(var aArr: array of TQuestion);
+var i: word;
+begin
+  for i := 0 to (numQuest-1) do begin
+     SwapTQuest(aArr[i], aArr[random(numQuest)]);
+  end;
+
+end;
+
+
+
+procedure TForm1.GeneratingAns(num: word);
+var i: word;
+begin
+   InitFormItems();
+   //randomQuestionArr(arr[num].masOfQuestion);
+
+   if arr[num].Multtype then
+      CheckGroup1.Visible := true
+   else
+       RadioGroup1.Visible := true;
+
+   if not(arr[num].Multtype) then begin
+      for i := 0 to 4 do begin
+
+           if pos('*', arr[num].masOfQuestion[i]) = 1 then begin
+             arr[num].masOfAns[i] := '1';
+             delete(arr[num].masOfQuestion[i], 1, 1);
+             end;
+
+           Form1.RadioGroup1.Items.Add(arr[num].masOfQuestion[i]);
+
+      end;
+      Form1.RadioGroup1.Caption := arr[num].masOfQuestion[-1];
+
+      Form1.RadioGroup1.Visible := True;
+   end
+   else begin
+       for i := 0 to 4 do begin
+
+         if pos('*', arr[num].masOfQuestion[i]) = 1 then begin
+           arr[num].masOfAns[i] := '1';
+           delete(arr[num].masOfQuestion[i], 1, 1);
+         end;
+
+         Form1.CheckGroup1.Items.Add(arr[num].masOfQuestion[i]);
+       end;
+
+       Form1.CheckGroup1.Caption := arr[num].masOfQuestion[-1];
+       Form1.CheckGroup1.Visible := True;
+
+   end;
+   if arr[num].questImage <> 'None' then begin
+        //Form1.Image1.Picture.LoadFromFile(ExtractFilePath(Application.ExeName) + arr[num].questImage);
+        //picture breaks my MacBook((
+        Form1.Image1.Visible := True;
+   end
+   else
+       Form1.Image1.Visible := False;
+
+
+
+end;
+
+
+function TForm1.Ans_Check(Question: TQuestion): byte;
+var i, tempres: byte;
+begin
+   tempres := 0;
+   if not Question.Multtype then begin
+      for i := 0 to 4 do begin
+          if RadioGroup1.ItemIndex <> -1 then begin
+             if Question.masOfAns[i] = '1' then
+                inc(tempres);
+          end;
+      end;
+   end
+   else begin
+        for i := 0 to 4 do begin
+            if CheckGroup1.Checked[i] then begin
+               if Question.masOfAns[i] = '1' then
+                  inc(tempres)
+               else
+                   tempres := 0;
+            end;
+        end;
+   end;
+   Ans_Check := tempres;
+end;
+
+
+procedure TForm1.LoadData();
+var str: ansistring;
+  i, j: longint;
+begin
+     randomize;
+     AssignFile(fin, OpenDialog1.FileName);
+     reset(fin);
+     Readln(fin, numQuest);
+     Readln(fin, maxres);
+
+     for i := 0 to (numQuest-1) do begin
+
+         readln(fin, str);
+
+         if str = 'Radio' then
+            arr[i].Multtype := false
+         else
+           arr[i].Multtype := true;
+
+         for j := -1 to 4 do
+             readln(fin, arr[i].masOfQuestion[j]);
+
+
+         readln(fin, arr[i].questImage);
+     end;
+
+     closefile(fin);
+     randomQuestions(arr);
+     ButtonLoad.Visible := false;
+
+end;
+
+procedure TForm1.InitFormItems();
+begin
+     CheckGroup1.Items.Clear();
+     RadioGroup1.Items.Clear();
+     CheckGroup1.Caption := '';
+     RadioGroup1.Caption := '';
+     CheckGroup1.Visible := false;
+     RadioGroup1.Visible := false;
+end;
+
+procedure TForm1.FinishForm();
+var temp: real;
+begin
+     temp := res / maxres * 100;
+     EditRes.Visible := True;
+
+     CheckGroup1.Visible := false;
+     RadioGroup1.Visible := false;
+
+     EditRes.Text := 'Your score: ' + FloatToStr(temp) + '%';
+     ButtonStart.visible := false;
+
+     Form1.Image1.Visible := False;
 end;
 
 procedure TForm1.ButtonStartClick(Sender: TObject);
-var i: word;
+
 begin
-  flag4 := '';
-  flag5 := '';
-  masOfQuastion1[0] := 'Multiply 7 and 8';
-  masOfQuastion1[1] := '*56';
-  masOfQuastion1[2] := '72';
-  masOfQuastion1[3] := '42';
-  masOfQuastion1[4] := '90';
-  masOfQuastion1[5] := '15';
 
-  masOfQuastion2[0] := 'Who is on picture?';
-  masOfQuastion2[1] := '*a cow';
-  masOfQuastion2[2] := 'a salmon';
-  masOfQuastion2[3] := 'a pineapple';
-  masOfQuastion2[4] := 'a fly';
-  masOfQuastion2[5] := 'a seagull';
+  if not startflag then begin
+     LoadData();
+     startflag := true;
+     ButtonStart.Caption := 'NEXT';
+     GeneratingAns(0);
+     inc(curnum);
+  end
+  else begin
+      res := res + Ans_Check(arr[curnum - 1]);
+      if (curnum < numQuest) then begin
+        GeneratingAns(curnum);
+      end;
 
-  masOfQuastion3[0] := 'Divide 144/12';
-  masOfQuastion3[1] := '132';
-  masOfQuastion3[2] := '156';
-  masOfQuastion3[3] := '1728';
-  masOfQuastion3[4] := '*12';
-  masOfQuastion3[5] := '14412';
-
-  masOfQuastion4[0] := 'Find strong acids';
-  masOfQuastion4[1] := '*HCl';
-  masOfQuastion4[2] := '*H2SO4';
-  masOfQuastion4[3] := 'H2S';
-  masOfQuastion4[4] := '*HI';
-  masOfQuastion4[5] := 'H2CO3';
-
-  masOfQuastion5[0] := 'Formula of Power';
-  masOfQuastion5[1] := '*U * I';
-  masOfQuastion5[2] := '*U^2 / R';
-  masOfQuastion5[3] := '*I^2 * R';
-  masOfQuastion5[4] := '*A / t';
-  masOfQuastion5[5] := 'm * a';
+     if curnum = numQuest-1 then begin
+        ButtonStart.Caption := 'FINISH';
+     end;
 
 
+     if curnum = numQuest then begin
+       FinishForm()
+     end;
+     inc(curnum);
 
-  RadioGroup1.Caption := masOfQuastion1[0];
-  randomArr(masOfQuastion1);
-
-  for i := 1 to 5 do begin
-    if pos('*', masOfQuastion1[i]) = 1 then begin
-       delete(masOfQuastion1[i], 1, 1);
-       flag1 := i;
-    end;
   end;
-
-  RadioButton1_g1.Caption := masOfQuastion1[1];
-  RadioButton2_g1.Caption := masOfQuastion1[2];
-  RadioButton3_g1.Caption := masOfQuastion1[3];
-  RadioButton4_g1.Caption := masOfQuastion1[4];
-  RadioButton5_g1.Caption := masOfQuastion1[5];
-
-
-
-  RadioGroup2.Caption := masOfQuastion2[0];
-  randomArr(masOfQuastion2);
-
-  for i := 1 to 5 do begin
-    if pos('*', masOfQuastion2[i]) = 1 then begin
-       delete(masOfQuastion2[i], 1, 1);
-       flag2 := i;
-    end;
-  end;
-  RadioButton1_g2.Caption := masOfQuastion2[1];
-  RadioButton2_g2.Caption := masOfQuastion2[2];
-  RadioButton3_g2.Caption := masOfQuastion2[3];
-  RadioButton4_g2.Caption := masOfQuastion2[4];
-  RadioButton5_g2.Caption := masOfQuastion2[5];
-
-
-  RadioGroup3.Caption := masOfQuastion3[0];
-  randomArr(masOfQuastion3);
-
-  for i := 1 to 5 do begin
-    if pos('*', masOfQuastion3[i]) = 1 then begin
-       delete(masOfQuastion3[i], 1, 1);
-       flag3 := i;
-    end;
-  end;
-
-  RadioButton1_g3.Caption := masOfQuastion3[1];
-  RadioButton2_g3.Caption := masOfQuastion3[2];
-  RadioButton3_g3.Caption := masOfQuastion3[3];
-  RadioButton4_g3.Caption := masOfQuastion3[4];
-  RadioButton5_g3.Caption := masOfQuastion3[5];
-
-  CheckGroup1.Caption := masOfQuastion4[0];
-  randomArr(masOfQuastion4);
-
-  for i := 1 to 5 do begin
-    if pos('*', masOfQuastion4[i]) = 1 then begin
-       delete(masOfQuastion4[i], 1, 1);
-       flag4 := flag4 + FloatToStr(i);
-    end;
-  end;
-  CheckBox1_g1.Caption := masOfQuastion4[1];
-  CheckBox2_g1.Caption := masOfQuastion4[2];
-  CheckBox3_g1.Caption := masOfQuastion4[3];
-  CheckBox4_g1.Caption := masOfQuastion4[4];
-  CheckBox5_g1.Caption := masOfQuastion4[5];
-
-  CheckGroup2.Caption := masOfQuastion5[0];
-  randomArr(masOfQuastion5);
-
-  for i := 1 to 5 do begin
-    if pos('*', masOfQuastion5[i]) = 1 then begin
-       delete(masOfQuastion5[i], 1, 1);
-       flag5 := flag5 + FloatToStr(i);
-    end;
-  end;
-  CheckBox1_g2.Caption := masOfQuastion5[1];
-  CheckBox2_g2.Caption := masOfQuastion5[2];
-  CheckBox3_g2.Caption := masOfQuastion5[3];
-  CheckBox4_g2.Caption := masOfQuastion5[4];
-  CheckBox5_g2.Caption := masOfQuastion5[5];
-
-  Image1.Visible := True;
 
 
 
 end;
+
+
+
+
+
+
 
 
 
