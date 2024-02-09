@@ -10,9 +10,10 @@ uses
 
 Type TQuestion = record
        Multtype: boolean;
+       numVariants: byte;
+       masOfQuestion: array [-1..9] of ansistring;  //all question = question[-1] + 5 variants [0..9]
+       masofAns: array [0..9] of ansistring;       //correct answers positions
        questImage: Ansistring;
-       masOfQuestion: array [-1..4] of ansistring;  //all question = question[-1] + 5 variants [0..4]
-       masofAns: array [0..4] of ansistring;       //correct answers positions
      end;
      TarrQ = array [0..100] of TQuestion;
 
@@ -114,11 +115,10 @@ end;
 
 
 procedure TForm1.randomQuestionArr(var aArr: array of string);
-var i, temp: word;
+var i: word;
 begin
-  for i := 0 to numQuest do begin
-     temp := random(numQuest);
-     swapStr(aArr[i], aArr[temp]);
+  for i := 1 to (numQuest-1) do begin
+     swapStr(aArr[i], aArr[random(numQuest)]);
   end;
 
 end;
@@ -147,7 +147,7 @@ begin
        RadioGroup1.Visible := true;
 
    if not(arr[num].Multtype) then begin
-      for i := 0 to 4 do begin
+      for i := 0 to (arr[num].numVariants - 1) do begin
 
            if pos('*', arr[num].masOfQuestion[i]) = 1 then begin
              arr[num].masOfAns[i] := '1';
@@ -162,7 +162,7 @@ begin
       Form1.RadioGroup1.Visible := True;
    end
    else begin
-       for i := 0 to 4 do begin
+       for i := 0 to  (arr[num].numVariants - 1) do begin
 
          if pos('*', arr[num].masOfQuestion[i]) = 1 then begin
            arr[num].masOfAns[i] := '1';
@@ -194,7 +194,7 @@ var i, tempres: byte;
 begin
    tempres := 0;
    if not Question.Multtype then begin
-      for i := 0 to 4 do begin
+      for i := 0 to (Question.numVariants - 1) do begin
           if RadioGroup1.ItemIndex <> -1 then begin
              if Question.masOfAns[i] = '1' then
                 inc(tempres);
@@ -202,7 +202,7 @@ begin
       end;
    end
    else begin
-        for i := 0 to 4 do begin
+        for i := 0 to (Question.numVariants - 1) do begin
             if CheckGroup1.Checked[i] then begin
                if Question.masOfAns[i] = '1' then
                   inc(tempres)
@@ -233,8 +233,9 @@ begin
             arr[i].Multtype := false
          else
            arr[i].Multtype := true;
+         readln(fin, arr[i].numVariants);
 
-         for j := -1 to 4 do
+         for j := -1 to (arr[i].numVariants - 1) do
              readln(fin, arr[i].masOfQuestion[j]);
 
 

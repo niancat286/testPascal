@@ -114,11 +114,10 @@ end;
 
 
 procedure TForm1.randomQuestionArr(var aArr: array of string);
-var i, temp: word;
+var i: word;
 begin
-  for i := 0 to numQuest do begin
-     temp := random(numQuest);
-     swapStr(aArr[i], aArr[temp]);
+  for i := 0 to (numQuest-1) do begin
+     swapStr(aArr[i], aArr[random(numQuest)]);
   end;
 
 end;
@@ -139,7 +138,7 @@ procedure TForm1.GeneratingAns(num: word);
 var i: word;
 begin
    InitFormItems();
-   //randomQuestionArr(arr[num].masOfQuestion);
+   randomQuestionArr(arr[num].masOfQuestion);
 
    if arr[num].Multtype then
       CheckGroup1.Visible := true
